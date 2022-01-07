@@ -1,4 +1,4 @@
-# nslookup-kata
+# udp-level-dns-resolver
 
 The goal of this Kata is to implement a custom version of `nslookup` at the
 socket level. `nslookup` is a DNS resolver program, it queries the DNS servers for records related a specified fully qualified domain name.
@@ -11,34 +11,31 @@ output from `scutil --dns` or `cat /etc/resolv.conf`.
 ## building
 
 ```sh
-git clone git@github.com:spacekitcat/nslookup-kata.git
-cd nslookup-kata
+git clone git@github.com:spacekitcat/udp-level-dns-resolver.git
+cd udp-level-dns-resolver
 mkdir build
 cd build
 cmake ../
 make
-./nslookup-kata google.com
+./udp-level-dns-resolver google.com
 ```
 
 Output:
 ```sh
 DNS query payload:
 
-99 E2    01 00    00 01    00 00
-00 00    00 00    06 67    6F 6F
-67 6C    65 03    63 6F    6D 00
-00 01    00 01
+DNS query payload:
+
+99 E2 01 00 00 01 00 00   00 00 00 00 06 67 6F 6F   .............goo
+67 6C 65 03 63 6F 6D 00   00 01 00 01
 
 
 Recieved 44 bytes.
 
 DNS response payload:
 
-99 E2    81 80    00 01    00 01
-00 00    00 00    06 67    6F 6F
-67 6C    65 03    63 6F    6D 00
-00 01    00 01    C0 0C    00 01
-00 01    00 00    00 79    00 04
-8E FA    B3 EE
+99 E2 81 80 00 01 00 01   00 00 00 00 06 67 6F 6F   .............goo
+67 6C 65 03 63 6F 6D 00   00 01 00 01 C0 0C 00 01   gle.com.........
+00 01 00 00 00 60 00 04   8E FA BB EE
 
 ```
