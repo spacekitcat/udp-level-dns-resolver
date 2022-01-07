@@ -63,14 +63,17 @@ int count_tokens(char *str_buffer, char delim)
 {
 	int token_count = 0;
 	char c;
-	for (int i = 0; (c = str_buffer[i]) != '\0'; ++i)
+	for (int i = 0; i<strlen(str_buffer); ++i)
 	{
-		if (c == delim)
+		if (str_buffer[i] == delim)
 		{
-			++token_count;
+			if (i < strlen(str_buffer) - 1 &&  str_buffer[i+1] != delim) {
+				++token_count;
+			}
 		}
 	}
 
+	printf("%d\n", token_count);
 	return token_count;
 }
 
@@ -83,7 +86,7 @@ char **parse_tokens(char *str_buffer, const char *delim, const int token_count)
 
 	while (token != NULL)
 	{
-		tokens[token_idx] = malloc(strlen(token));
+		tokens[token_idx] = malloc(strlen(token) + 1);
 		strcpy(tokens[token_idx], token);
 
 		++token_idx;
@@ -93,26 +96,15 @@ char **parse_tokens(char *str_buffer, const char *delim, const int token_count)
 	return tokens;
 }
 
-int str_ends_with(const char *str, const char token)
-{
-	char c;
-	int lastIndex = 0;
-	for (; (c = str[lastIndex]) != '\0'; ++lastIndex)
-		;
-
-	if (lastIndex > 0 && str[lastIndex - 1] == token)
-	{
-		return 1;
-	}
-	return 0;
-}
-
 int count_string_array_sizeof(char **str_matrix, const int string_count)
 {
 	int zoneLabelLengths = 0;
 	for (int i = 0; i < string_count; ++i)
 	{
-		zoneLabelLengths += strlen(str_matrix[i]);
+		if (str_matrix[i] != NULL)
+		{
+			zoneLabelLengths += strlen(str_matrix[i]);
+		}
 	}
 
 	return zoneLabelLengths;
@@ -125,11 +117,8 @@ int main(int argc, char *argv[])
 
 	if (argc == 2)
 	{
-		zone_label_count = count_tokens(argv[1], '.');
-		if (str_ends_with(argv[1], '.') == 0)
-		{
-			zone_label_count += 1;
-		}
+		// +1 for the terminating label (or root zone if you prefer to think of it that way)
+		zone_label_count = count_tokens(argv[1], '.') + 1;
 		zone_label_list = parse_tokens(argv[1], ".", zone_label_count);
 	}
 	else
@@ -159,7 +148,6 @@ int main(int argc, char *argv[])
 					.z = 0x0,
 			};
 
-
 	int zoneLabelLengths = count_string_array_sizeof(zone_label_list, zone_label_count);
 	int query_label_section_size = sizeof(uint16_t) * 2;
 	int terminating_char = sizeof(uint8_t);
@@ -173,7 +161,10 @@ int main(int argc, char *argv[])
 	// Transfer zone query labels to dns payload
 	for (int i = 0; i < zone_label_count; ++i)
 	{
-		dns_payload_ptr_it = appendQueryLabel(dns_payload_ptr_it, zone_label_list[i], strlen(zone_label_list[i]));
+		if (zone_label_list[i] != NULL)
+		{
+			dns_payload_ptr_it = appendQueryLabel(dns_payload_ptr_it, zone_label_list[i], strlen(zone_label_list[i]));
+		}
 	}
 	dns_payload_ptr_it = appendQueryLabel(dns_payload_ptr_it, "", 0);
 
