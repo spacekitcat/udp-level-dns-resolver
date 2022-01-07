@@ -63,11 +63,12 @@ int count_tokens(char *str_buffer, char delim)
 {
 	int token_count = 0;
 	char c;
-	for (int i = 0; i<strlen(str_buffer); ++i)
+	for (int i = 0; i < strlen(str_buffer); ++i)
 	{
 		if (str_buffer[i] == delim)
 		{
-			if (i < strlen(str_buffer) - 1 &&  str_buffer[i+1] != delim) {
+			if (i < strlen(str_buffer) - 1 && str_buffer[i + 1] != delim)
+			{
 				++token_count;
 			}
 		}
