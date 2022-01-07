@@ -74,7 +74,6 @@ int count_tokens(char *str_buffer, char delim)
 		}
 	}
 
-	printf("%d\n", token_count);
 	return token_count;
 }
 
@@ -124,7 +123,7 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		printf("Expected a DNS name as the first argument.\n");
+		fprintf(stderr, "Error: The domain name was not specified as the first argument as expected\n");
 		return 1;
 	}
 
@@ -186,7 +185,7 @@ int main(int argc, char *argv[])
 	socklen_t dns_server_len = sizeof(struct sockaddr_in);
 	if (sendto(udp_socket, dns_query, total_dns_payload_size, 0, (struct sockaddr *)&dns_server, dns_server_len) < 0)
 	{
-		printf("Error sending UDP packet.\n");
+		fprintf(stderr, "Error: An unexpected error was encountered while attempting to send the UDP packet");
 		return 2;
 	}
 
