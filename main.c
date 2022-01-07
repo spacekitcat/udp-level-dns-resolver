@@ -123,7 +123,7 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		fprintf(stderr, "Error: The domain name was not specified as the first argument as expected\n");
+		fprintf(stderr, "udp-level-dns-resolver: the domain name was not specified as the first argument as expected\n");
 		return 1;
 	}
 
@@ -132,21 +132,22 @@ int main(int argc, char *argv[])
 	int udp_socket;
 	if ((udp_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0)
 	{
+		fprintf(stderr, "udp-level-dns-resolver: an unexpected error was encountered while creating the socket");
+
 		return 1;
 	}
 
-	struct dns_header header =
-			{
-					.tx_id = htons(0x99e2),
-					.question_count = htons(1),
-					.answer_rr_count = htons(0),
-					.authority_rr_count = htons(0),
-					.extra_rr_count = htons(0),
-					.is_response = 0x0,
-					.recursion_desired = 0x1,
-					.truncated = 0x0,
-					.z = 0x0,
-			};
+	struct dns_header header = {
+			.tx_id = htons(0x99e2),
+			.question_count = htons(1),
+			.answer_rr_count = htons(0),
+			.authority_rr_count = htons(0),
+			.extra_rr_count = htons(0),
+			.is_response = 0x0,
+			.recursion_desired = 0x1,
+			.truncated = 0x0,
+			.z = 0x0,
+	};
 
 	int zoneLabelLengths = count_string_array_sizeof(zone_label_list, zone_label_count);
 	int query_label_section_size = sizeof(uint16_t) * 2;
@@ -185,8 +186,8 @@ int main(int argc, char *argv[])
 	socklen_t dns_server_len = sizeof(struct sockaddr_in);
 	if (sendto(udp_socket, dns_query, total_dns_payload_size, 0, (struct sockaddr *)&dns_server, dns_server_len) < 0)
 	{
-		fprintf(stderr, "Error: An unexpected error was encountered while attempting to send the UDP packet");
-		return 2;
+		fprintf(stderr, "udp-level-dns-resolver: an unexpected error was encountered while attempting to send the UDP packet");
+		return 1;
 	}
 
 	/** Response **/
